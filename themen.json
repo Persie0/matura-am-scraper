@@ -1,0 +1,206 @@
+[
+    {
+        "id": "2",
+        "thema": "absoluter und relativer Fehler"
+    },
+    {
+        "id": "3",
+        "thema": "Bewegungsaufgaben"
+    },
+    {
+        "id": "5",
+        "thema": "Binomialverteilung"
+    },
+    {
+        "id": "6",
+        "thema": "\u00c4nderungsma\u00dfe"
+    },
+    {
+        "id": "7",
+        "thema": "Differenzialrechnung"
+    },
+    {
+        "id": "8",
+        "thema": "Exponentialfunktion"
+    },
+    {
+        "id": "11",
+        "thema": "Formeln - Abh\u00e4ngigkeiten"
+    },
+    {
+        "id": "17",
+        "thema": "Grenzwert und Stetigkeit / asymptotisches Verhalten"
+    },
+    {
+        "id": "20",
+        "thema": "Lineare Funktion"
+    },
+    {
+        "id": "21",
+        "thema": "Lineare Gleichungen"
+    },
+    {
+        "id": "23",
+        "thema": "Lineare Gleichungssysteme"
+    },
+    {
+        "id": "24",
+        "thema": "Regression, Korrelation, Methode der kleinsten Quadrate"
+    },
+    {
+        "id": "26",
+        "thema": "Logarithmen"
+    },
+    {
+        "id": "27",
+        "thema": "Logarithmusfunktion"
+    },
+    {
+        "id": "28",
+        "thema": "Logarithmusgleichungen"
+    },
+    {
+        "id": "30",
+        "thema": "Normalverteilung"
+    },
+    {
+        "id": "37",
+        "thema": "Quadratische Funktion / Wurzelfunktion"
+    },
+    {
+        "id": "38",
+        "thema": "Quadratische Gleichungen"
+    },
+    {
+        "id": "9",
+        "thema": "Exponentialgleichungen"
+    },
+    {
+        "id": "114",
+        "thema": "Funktionale Zusammenh\u00e4nge"
+    },
+    {
+        "id": "41",
+        "thema": "beschreibende Statistik"
+    },
+    {
+        "id": "42",
+        "thema": "Sinussatz, Cosinussatz"
+    },
+    {
+        "id": "43",
+        "thema": "sin, cos, tan im rechtwinkeligen Dreieck"
+    },
+    {
+        "id": "44",
+        "thema": "Zufallsstreubereich / Konfidenzintervall"
+    },
+    {
+        "id": "49",
+        "thema": "Wahrscheinlichkeit"
+    },
+    {
+        "id": "52",
+        "thema": "Matrizen"
+    },
+    {
+        "id": "53",
+        "thema": "Finanzmathematik"
+    },
+    {
+        "id": "59",
+        "thema": "lineare Optimierung"
+    },
+    {
+        "id": "72",
+        "thema": "komplexe Zahlen"
+    },
+    {
+        "id": "74",
+        "thema": "logarithmische Skalierung"
+    },
+    {
+        "id": "79",
+        "thema": "bedingte Wahrscheinlichkeit"
+    },
+    {
+        "id": "106",
+        "thema": "Zahlen und Ma\u00dfe"
+    },
+    {
+        "id": "85",
+        "thema": "Regression, nicht linear"
+    },
+    {
+        "id": "96",
+        "thema": "Rotationsvolumen"
+    },
+    {
+        "id": "105",
+        "thema": "linearer Mittelwert einer Funktion"
+    },
+    {
+        "id": "107",
+        "thema": "Differenzialgleichungen"
+    },
+    {
+        "id": "108",
+        "thema": "Integralrechnung"
+    },
+    {
+        "id": "36",
+        "thema": "Prozent- und Promillerechnung"
+    },
+    {
+        "id": "39",
+        "thema": "Rechnen mit Termen und Formeln / Umformen"
+    },
+    {
+        "id": "54",
+        "thema": "Schuldtilgung"
+    },
+    {
+        "id": "69",
+        "thema": "Trigonometrische Funktionen"
+    },
+    {
+        "id": "89",
+        "thema": "Investitionsrechnung"
+    },
+    {
+        "id": "95",
+        "thema": "Geometrisches Mittel"
+    },
+    {
+        "id": "55",
+        "thema": "Kosten- und Preistheorie"
+    },
+    {
+        "id": "80",
+        "thema": "Folgen und Reihen"
+    },
+    {
+        "id": "15",
+        "thema": "Geometrie"
+    },
+    {
+        "id": "34",
+        "thema": "Potenzfunktion"
+    },
+    {
+        "id": "35",
+        "thema": "Potenzgesetze"
+    },
+    {
+        "id": "58",
+        "thema": "Mengen"
+    },
+    {
+        "id": "64",
+        "thema": "Vektoren"
+    },
+    {
+        "id": "33",
+        "thema": "Polynomfunktion"
+    }
+]
