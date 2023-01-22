@@ -19,15 +19,15 @@ def find_right_page(pdf_reader, such_string, first_match=True):
                 count += 1
                 if count == 2:
                     return page_number+1
-    return pdf_reader.getNumPages()-1
+    return 1
 
         
     return such_page
 
 # Open the PDF file
-with open("pdfs/Sauna (PT3_2020)_859.pdf", "rb") as f:
+with open("pdfs/Schiefe_Tuerme_778.pdf", "rb") as f:
     pdf_reader = PyPDF2.PdfFileReader(f)
-    page_number = find_right_page(pdf_reader, "c1\)")
+    page_number = find_right_page(pdf_reader, "b1\)", False)
     if page_number != -1:
         print("String found again on page: ", page_number)
     else:

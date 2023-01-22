@@ -135,7 +135,6 @@ from io import BytesIO
 import PyPDF2
 import os
 from pdf2image import convert_from_path
-import easyocr
 import re
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LAParams
@@ -146,25 +145,23 @@ from PIL import Image
 
 # Loop through the pages of the PDF
 def find_right_page(pdf_reader, such_string, first_match=True):
-     # Initialize a variable to keep track of the number of times the string is found
+    # Initialize a variable to keep track of the number of times the string is found
     count = 0
-    such_page=len(pdf_reader.pages)-1
-    for page_num in range(len(pdf_reader.pages)):
-        page = pdf_reader.pages[page_num]
+    # Iterate through all pages
+    for page_number in range(len(pdf_reader.pages)):
+        page = pdf_reader.pages[page_number]
+        # Extract the text from the page
         text = page.extract_text()
-    # Search for the string in the text
+        # Search for the string in the text
         match = re.search(such_string, text)
         if match:
             if first_match:
-                return page_num+1
+                return page_number+1
             else:
                 count += 1
                 if count == 2:
-                    return page_num+1
-    if first_match:
-      return -1
-    else:
-      return pdf_reader.getNumPages()-1
+                    return page_number+1
+    return -1
     
 def get_string_position_and_crop(pdf_file, string, page_number):
     with open(pdf_file, 'rb') as f:
@@ -213,7 +210,6 @@ with open("/content/drive/MyDrive/"+'themen.json') as json_file:
 if not os.path.exists("/content/drive/MyDrive/Themen/"):
   os.makedirs("/content/drive/MyDrive/Themen/")
 
-reader = easyocr.Reader(['de'], gpu=False)
 for the in themen:
   #open beispiele.json
   with open("/content/drive/MyDrive/"+'beispiele.json') as json_file:
@@ -236,7 +232,7 @@ for the in themen:
 
       auf_dir="/content/drive/MyDrive/Themen/"+thema+"/"+aufgabe_name
 
-      if os.path.exists(auf_dir+"/"+"loesung.jpeg"):
+      if os.path.exists(auf_dir+"/"+bsp["id"]+"loesung.jpeg"):
           continue
       
       #get "aufgabe_body"
@@ -245,11 +241,6 @@ for the in themen:
       #get ab as image and ocr image
       response = requests.get(ab)
       img = Image.open(BytesIO(response.content))
-      #ocr image with easyocr
-      
-      result = reader.readtext(img)
-      print(result)
-      text = result[0][1]
       
       #download "loesung" as pdf
       loe=bsp['loesung']
@@ -260,24 +251,12 @@ for the in themen:
           open("/content/drive/MyDrive/"+"pdfs/"+pdf_name, 'wb').write(r.content)
 
       #extract bsp letter + ")"
-      aufgabe = text.split(")")[0].strip()
+      aufgabe = ab.split("/")[-1].split(".")[0]
 
 
       pdf_file = open("/content/drive/MyDrive/"+"pdfs/"+pdf_name, "rb")
       pdf_reader = PyPDF2.PdfReader(pdf_file)
 
-      #manually type in the aufgabe letter if aufgabe is longer than 5 char
-      if len(aufgabe) > 5:
-
-          #find text before aufgabe   
-          for i in range(len(pdf_reader.pages)):
-              page = pdf_reader.pages[i]
-              page_text = page.extract_text()
-              if aufgabe[:12] in page_text:
-                  #get index of aufgabe
-                  index = page_text.index(aufgabe[:12])
-                  au=page_text[index-10:index]
-                  aufgabe=au.strip().split(" ")[-1][:-1]
 
       #make aufgabe_name directory in thema dir
       if not os.path.exists(auf_dir):
@@ -307,21 +286,27 @@ for the in themen:
 
       such_string = aufgabe+"1)"
       reg=aufgabe+"1\)"
-      print(such_string)
+      print("reg: "+reg)
       such_page = None
 
 
 
-      print(such_string)
+      
       print(pdf_file)
       such_page = find_right_page(pdf_reader, reg, True)
 
 
       if such_page == -1:
+          such_string = aufgabe+")"
           reg=aufgabe+"\)"
+          print("reg): "+reg)
           such_page = find_right_page(pdf_reader, reg, False)
 
-      print(such_page)
+      if such_page == -1:
+        such_page=len(pdf_reader.pages)-1
+
+
+      print("Page: " + str(such_page))
 
           
 
@@ -355,7 +340,7 @@ c=0
 for bsp in data:
     c+=1
     aufgabe_name= bsp["name"]+"_"+bsp["id"]
-    auf_dir="/content/drive/MyDrive/"+thema+"/"+aufgabe_name
+    auf_dir="/content/drive/MyDrive/Themen/"+thema+"/"+aufgabe_name
     ah=bsp['aufgabe_head']
     ah_name= bsp["id"]+"ah"
     ah_path= auf_dir+"/"+ah_name+".png"
@@ -392,7 +377,8 @@ my_package = genanki.Package(my_deck)
 my_package.media_files = img
 
 #create directory if not exists
-if not os.path.exists("/content/drive/MyDrive/AM_RDP_Decks"):
-    os.makedirs("/content/drive/MyDrive/AM_RDP_Decks")
+if not os.path.exists("/content/drive/MyDrive/AM_RDP_Decks/"+thema):
+    os.makedirs("/content/drive/MyDrive/AM_RDP_Decks/"+thema)
+
 
 my_package.write_to_file("/content/drive/MyDrive/AM_RDP_Decks/"+thema+'.apkg')
