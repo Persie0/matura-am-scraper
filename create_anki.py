@@ -1,70 +1,71 @@
 import json
 import genanki
 
-#open themen.json
-with open('themen.json') as json_file:
+
+
+with open("/content/drive/MyDrive/"+'themen.json') as json_file:
     themen = json.load(json_file)
 
-
-#open beispiele.json
-with open('beispiele.json') as json_file:
-    data = json.load(json_file)
-
 for the in themen:
-    thema=the["thema"]
+    #open beispiele.json
+  with open('/content/drive/MyDrive/beispiele.json') as json_file:
+      data = json.load(json_file)
 
-    my_deck = genanki.Deck(
-        deck_id=12345, # a unique id for the deck
-        name=thema+"_RDP_scraped") # the name of the deck
+  thema=the["thema"]
 
-    img=[]
-    #filter by thema
-    data = [i for i in data if i['thema'] == thema]
-    c=0
-    for bsp in data:
-        c+=1
-        aufgabe_name= bsp["name"]+"_"+bsp["id"]
-        auf_dir=thema+"/"+aufgabe_name
-        ah=bsp['aufgabe_head']
-        ah_name= aufgabe_name+"_ah"
-        ah_path= auf_dir+"/"+ah_name+".png"
-        ab=bsp['aufgabe_body']
-        ab_name= aufgabe_name+"_ab"
-        ab_path= auf_dir+"/"+ab_name+".png"
-        my_card = genanki.Note(
-        model=genanki.Model(
-            1380120064,
+  my_deck = genanki.Deck(
+      deck_id=12345, # a unique id for the deck
+      name=thema+"_RDP_scraped") # the name of the deck
+
+  img=[]
+  #filter by thema
+  data = [i for i in data if i['thema'] == thema]
+  c=0
+  for bsp in data:
+          #get "aufgabe_body"
+      ab=bsp['aufgabe_body']
+       #extract bsp letter + ")"
+      aufgabe = ab.split("/")[-1].split(".")[0]
+      c+=1
+      aufgabe_name= bsp["name"]+"_"+bsp["id"]
+      auf_dir="/content/drive/MyDrive/Themen/"+thema+"/"+aufgabe_name
+      ah=bsp['aufgabe_head']
+      ah_name= bsp["id"]+aufgabe+"_ah"
+      ah_path= auf_dir+"/"+ah_name+".png"
+      ab=bsp['aufgabe_body']
+      ab_name= bsp["id"]+aufgabe+"_ab"
+      ab_path= auf_dir+"/"+ab_name+".png"
+      my_card = genanki.Note(
+      model=genanki.Model(
+          1380120064,
     'Example',
-            fields=[
-                {'name': 'Image1'},
-                {'name': 'Image2'},
-                
-                {'name': 'AnswerImage'},
-                {'name': 'Answer'},
-            ],
-            templates=[
-                {
-                    'name': 'Card 1',
-                    'qfmt': '{{Image1}}<br>{{Image2}}',
-                    'afmt': '{{AnswerImage}}<br>{{Answer}}',
-                },
-            ]
-        ),
-        fields=['<img src="{}">'.format(ah_name+".png"), '<img src="{}">'.format(ab_name+".png"), '<img src="{}">'.format("loesung.jpeg"), '<a href="{}">Link</a>'.format(bsp["loesung"])])
+          fields=[
+              {'name': 'Image1'},
+              {'name': 'Image2'},
+              
+              {'name': 'AnswerImage'},
+              {'name': 'Answer'},
+          ],
+          templates=[
+              {
+                  'name': 'Card 1',
+                  'qfmt': '<br>{{Image1}}<br>{{Image2}}',
+                  'afmt': '{{FrontSide}}<br><hr id=answer>{{AnswerImage}}<br>{{Answer}}',
+              },
+          ]
+      ),
+      fields=['<div style="text-align: center;"><img src="{}"></div>'.format(ah_name+".png"), '<div style="text-align: center;"><img src="{}"></div>'.format(ab_name+".png"), '<div style="text-align: center;"><img src="{}"></div>'.format(bsp["id"]+aufgabe+"_loesung.jpeg"), '<div style="text-align: center;"><a href="{}">Link</a></div>'.format(bsp["loesung"])])
 
-        img.append(ah_path)
-        img.append(ab_path)
-        img.append(auf_dir+"/"+"loesung.jpeg")
-        my_deck.add_note(my_card)
-        if c==3:
-            break
+      img.append(ah_path)
+      img.append(ab_path)
+      img.append(auf_dir+"/"+bsp["id"]+aufgabe+"_loesung.jpeg")
+      my_deck.add_note(my_card)
 
-    my_package = genanki.Package(my_deck)
-    my_package.media_files = img
+  my_package = genanki.Package(my_deck)
+  my_package.media_files = img
 
-
-
-    my_package.write_to_file(thema+'.apkg')
-
+  if len(img)!=0:
+    my_package.write_to_file("/content/drive/MyDrive/AM_RDP_Decks/"+thema+'.apkg')
+  print(thema+" fertig")
 
 

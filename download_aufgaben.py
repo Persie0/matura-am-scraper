@@ -1,3 +1,5 @@
+#download and extract images
+
 import json
 import sys
 sys.path.append('/usr/local/lib/python3.8/dist-packages')
@@ -27,16 +29,16 @@ def find_right_page(pdf_reader, such_string, first_match=True):
         # Search for the string in the text
         match = re.search(such_string, text)
         if match:
-            print("match", match.group(0) )
             if first_match:
                 return page_number+1
             else:
                 count += 1
                 if count == 2:
                     return page_number+1
-    return len(pdf_reader.pages)
+    return -1
     
 def get_string_position_and_crop(pdf_file, string, page_number):
+    print("suche nach: "+string+ ", seite: " + str(page_number) + ", in: "+pdf_file)
     with open(pdf_file, 'rb') as f:
         # Create a PDF resource manager object that stores shared resources
         resource_manager = PDFResourceManager()
@@ -61,31 +63,47 @@ def get_string_position_and_crop(pdf_file, string, page_number):
                         if string in element.get_text().strip():
                             print(element.get_text().strip())
                             if firs:
-                                firs=False
-                                pz = element.bbox[1]/layout.height
-                                # Convert the page to an image
+                              print(element.bbox[1]/layout.height)
+                              firs=False
+                              pz = element.bbox[1]/layout.height
+                              # Convert the page to an image
                                 
                                 
                             else:
                                 p2 = element.bbox[1]/layout.height
                                 p2=image.height-p2*image.height-50
 
-
-                            # Crop the image based on the y value
-                image = image.crop((0, image.height-pz*image.height-90, image.width, p2))
-                return image
+                # Crop the image based on the y value
+                y1=image.height-pz*image.height-80
+                if (y1) < 0:
+                  y1=0
+               # Handle the case where the crop parameters are outside the image
+                if p2 > image.height:
+                  p2=image.height
+                try:
+                  image = image.crop((0, y1, image.width, p2))
+                  image.save(auf_dir+"/"+bsp["id"]+aufgabe+"_loesung.jpeg")
+                except:
+                  try:
+                    image = image.crop((0, image.height, image.width, p2))
+                    image.save(auf_dir+"/"+bsp["id"]+aufgabe+"_loesung.jpeg")
+                  except:
+                    print("Not cropped: "+ pdf_file)
     return None
 
 #open themen.json
-with open(""+'themen.json') as json_file:
+with open("/content/drive/MyDrive/"+'themen.json') as json_file:
     themen = json.load(json_file)
 
-if not os.path.exists("Themen/"):
-  os.makedirs("Themen/")
+if not os.path.exists("/content/drive/MyDrive/Themen/"):
+  os.makedirs("/content/drive/MyDrive/Themen/")
+      #if no thema folder make one
+if not os.path.exists("/content/drive/MyDrive/pdfs"):
+    os.makedirs("/content/drive/MyDrive/pdfs")
 
 for the in themen:
   #open beispiele.json
-  with open(""+'beispiele.json') as json_file:
+  with open("/content/drive/MyDrive/"+'beispiele.json') as json_file:
       data = json.load(json_file)
   thema=the["thema"]
   print(thema)
@@ -95,39 +113,31 @@ for the in themen:
   data = [i for i in data if i['thema'] == thema]
 
 
-      #if no thema folder make one
-  if not os.path.exists("pdfs"):
-      os.makedirs("pdfs")
-
 
   for bsp in data:
-      aufgabe_name= bsp["name"]+"_"+bsp["id"]
-
-      auf_dir="Themen/"+thema+"/"+aufgabe_name
-
-      if os.path.exists(auf_dir+"/"+bsp["id"]+"loesung.jpeg"):
-          continue
-      
-      #get "aufgabe_body"
+          #get "aufgabe_body"
       ab=bsp['aufgabe_body']
+       #extract bsp letter + ")"
+      aufgabe = ab.split("/")[-1].split(".")[0]
+      aufgabe_name= bsp["name"]+"_"+bsp["id"]+aufgabe
 
-      #get ab as image and ocr image
-      response = requests.get(ab)
-      img = Image.open(BytesIO(response.content))
+      auf_dir="/content/drive/MyDrive/Themen/"+thema+"/"+aufgabe_name
+
+      if os.path.exists(auf_dir+"/"+bsp["id"]+aufgabe+"_loesung.jpeg"):
+          continue
       
       #download "loesung" as pdf
       loe=bsp['loesung']
-      pdf_name= aufgabe_name+".pdf"
+      pdf_name= bsp["name"]+"_"+bsp["id"]+".pdf"
       #check if already downloaded
-      if not os.path.exists(""+"pdfs/"+pdf_name):
+      if not os.path.exists("/content/drive/MyDrive/"+"pdfs/"+pdf_name):
           r = requests.get(loe, allow_redirects=True)
-          open(""+"pdfs/"+pdf_name, 'wb').write(r.content)
+          open("/content/drive/MyDrive/"+"pdfs/"+pdf_name, 'wb').write(r.content)
 
-      #extract bsp letter + ")"
-      aufgabe = ab.split("/")[-1].split(".")[0]
+     
 
 
-      pdf_file = open(""+"pdfs/"+pdf_name, "rb")
+      pdf_file = open("/content/drive/MyDrive/"+"pdfs/"+pdf_name, "rb")
       pdf_reader = PyPDF2.PdfReader(pdf_file)
 
 
@@ -137,7 +147,7 @@ for the in themen:
       
       #download "aufgabe_head" as image
       ah=bsp['aufgabe_head']
-      ah_name= bsp["id"]+"ah"
+      ah_name= bsp["id"]+aufgabe+"_ah"
       ah_path= auf_dir+"/"+ah_name+".png"
       #check if already downloaded
       if not os.path.exists(ah_path):
@@ -147,7 +157,7 @@ for the in themen:
 
       #download "aufgabe_body" as image
       ab=bsp['aufgabe_body']
-      ab_name= bsp["id"]+"ab"
+      ab_name= bsp["id"]+aufgabe+"_ab"
       ab_path= auf_dir+"/"+ab_name+".png"
       #check if already downloaded
       if not os.path.exists(ab_path):
@@ -159,7 +169,6 @@ for the in themen:
 
       such_string = aufgabe+"1)"
       reg=aufgabe+"1\)"
-      print("reg: "+reg)
       such_page = None
 
 
@@ -170,21 +179,20 @@ for the in themen:
 
 
       if such_page == -1:
-          reg=aufgabe+"\)"
           such_string = aufgabe+")"
-          print(reg)
+          reg=aufgabe+"\)"
           such_page = find_right_page(pdf_reader, reg, False)
 
-      print("Page: " + str(such_page))
+      if such_page == -1:
+        such_page=len(pdf_reader.pages)-1
 
           
 
-      image = get_string_position_and_crop(""+"pdfs/"+pdf_name, such_string, such_page)
-      if image:
-          # Save the cropped image
-          image.save(auf_dir+"/"+bsp["id"]+"loesung.jpeg")
+      image = get_string_position_and_crop("/content/drive/MyDrive/"+"pdfs/"+pdf_name, such_string, such_page)
+      
           
       pdf_file.close()
+      print("\n\n")
 
 
 
