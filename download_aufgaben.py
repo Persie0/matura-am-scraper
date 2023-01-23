@@ -1,5 +1,6 @@
 #download and extract images
 
+import cv2
 import json
 import sys
 sys.path.append('/usr/local/lib/python3.8/dist-packages')
@@ -16,6 +17,36 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfpage import PDFPage
 from pdf2image import convert_from_path
 from PIL import Image
+
+def find_grey_rectangle(img_name):
+    # Load the image
+    img = cv2.imread(img_name)
+
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Apply thresholding
+    ret, thresh = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)
+
+    # Find all the contours
+    contours, _ = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Sort the contours by their y-coordinate
+    contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
+
+    # Iterate through all the contours
+    for cnt in contours:
+        # Find the bounding rect of the contour
+        x, y, w, h = cv2.boundingRect(cnt)
+        # Filter the contours based on their area and width
+        if w >= 0.75*img.shape[1]:
+            break
+
+    #cut the image so only the rectangle is left
+    img = img[y:y+h, x:x+w]
+
+    # save the image
+    cv2.imwrite(img_name, img)
 
 # Loop through the pages of the PDF
 def find_right_page(pdf_reader, such_string, first_match=True):
@@ -123,8 +154,8 @@ for the in themen:
 
       auf_dir="/content/drive/MyDrive/Themen/"+thema+"/"+aufgabe_name
 
-      if os.path.exists(auf_dir+"/"+bsp["id"]+aufgabe+"_loesung.jpeg"):
-          continue
+      #if os.path.exists(auf_dir+"/"+bsp["id"]+aufgabe+"_loesung.jpeg"):
+          #continue
       
       #download "loesung" as pdf
       loe=bsp['loesung']
@@ -189,6 +220,7 @@ for the in themen:
           
 
       image = get_string_position_and_crop("/content/drive/MyDrive/"+"pdfs/"+pdf_name, such_string, such_page)
+      find_grey_rectangle(auf_dir+"/"+bsp["id"]+aufgabe+"_loesung.jpeg")
       
           
       pdf_file.close()
