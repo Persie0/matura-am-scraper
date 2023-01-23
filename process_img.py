@@ -16,7 +16,6 @@ contours, _ = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[1])
 
 # Iterate through all the contours
-cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 for cnt in contours:
     # Find the bounding rect of the contour
     x, y, w, h = cv2.boundingRect(cnt)
