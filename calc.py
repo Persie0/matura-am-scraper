@@ -52,11 +52,15 @@ def find_grey_rectangle(img_name):
                 break
 
 
+
     # Convert the cropped image to grayscale
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     # Apply thresholding
     ret, thresh = cv2.threshold(gray, 240, 255, cv2.THRESH_BINARY)
+
+    #invert the image
+    thresh = cv2.bitwise_not(thresh)
 
     # Find the non-zero pixels in the thresholded image
     non_zero_pixels = cv2.findNonZero(thresh)
@@ -65,10 +69,10 @@ def find_grey_rectangle(img_name):
     (x, y, w, h) = cv2.boundingRect(non_zero_pixels)
 
     # Add some padding to the bounding rectangle
-    x -= 10
-    y -= 10
-    w += 20
-    h += 20
+    x -= 3
+    y -= 3
+    w += 6
+    h += 6
 
     #error handling
     if x < 0:
@@ -86,4 +90,4 @@ def find_grey_rectangle(img_name):
     # Save the cropped image
     cv2.imwrite("img_name.png", img)
 
-find_grey_rectangle('113a_loesung (1).jpeg')
+find_grey_rectangle('786c_loesung.jpeg')
